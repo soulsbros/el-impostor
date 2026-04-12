@@ -214,7 +214,7 @@ function handleCardTap() {
   if (!state.cardRevealed) {
     revealCard();
   } else {
-    hideCard();
+    nextPlayer();
   }
 }
 
