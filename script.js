@@ -1,4 +1,4 @@
-/* ── State ─────────────────────────────────────────── */
+/* -- State -- */
 const state = {
   totalPlayers: 4,
   numImpostors: 1,
@@ -10,7 +10,7 @@ const state = {
   phase: "setup", // 'setup' | 'reveal' | 'game' | 'results'
 };
 
-/* ── Helpers ───────────────────────────────────────── */
+/* -- Helpers -- */
 function shuffle(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -31,11 +31,20 @@ function showScreen(id) {
   document.getElementById(id).classList.add("active");
 }
 
-/* ── Setup Screen ──────────────────────────────────── */
+/* -- Setup Screen -- */
 function initSetup() {
   updateCounterUI("players", state.totalPlayers);
   updateCounterUI("impostors", state.numImpostors);
   setGameType(state.gameType);
+
+  const sel = document.getElementById("select-category");
+  sel.innerHTML = "";
+  CATEGORIES.forEach((cat) => {
+    const opt = document.createElement("option");
+    opt.value = cat;
+    opt.textContent = cat;
+    sel.appendChild(opt);
+  });
 }
 
 function updateCounterUI(type, value) {
@@ -77,8 +86,13 @@ function setGameType(type) {
 }
 
 function startGame() {
-  // Pick a random word pair
-  state.wordPair = pickRandom(WORD_PAIRS);
+  // Pick a random word pair from selected category
+  const category = document.getElementById("select-category").value;
+  const pool =
+    category === "Random"
+      ? WORD_PAIRS
+      : WORD_PAIRS.filter((p) => p.category === category);
+  state.wordPair = pickRandom(pool);
 
   // Assign roles
   const indices = Array.from({ length: state.totalPlayers }, (_, i) => i);
@@ -108,7 +122,7 @@ function startGame() {
   renderRevealCard();
 }
 
-/* ── Reveal Screen ─────────────────────────────────── */
+/* -- Reveal Screen -- */
 function renderRevealCard() {
   const player = state.players[state.currentRevealIndex];
   const total = state.players.length;
@@ -215,7 +229,7 @@ function nextPlayer() {
   }
 }
 
-/* ── Game Screen ───────────────────────────────────── */
+/* -- Game Screen -- */
 function beginGame() {
   state.phase = "game";
   showScreen("screen-game");
@@ -226,7 +240,7 @@ function beginGame() {
     state.totalPlayers - state.numImpostors;
 }
 
-/* ── Results Screen ────────────────────────────────── */
+/* -- Results Screen -- */
 function showResults() {
   state.phase = "results";
   showScreen("screen-results");
@@ -261,13 +275,21 @@ function showResults() {
     });
 }
 
-/* ── Play Again ────────────────────────────────────── */
+/* -- Play Again -- */
 function playAgain() {
+  if (!confirm("Go back to setup? The current game will be lost.")) return;
   state.phase = "setup";
   showScreen("screen-setup");
 }
 
-/* ── Event Wiring ──────────────────────────────────── */
+/* -- Reload guard -- */
+window.addEventListener("beforeunload", (e) => {
+  if (state.phase !== "setup") {
+    e.preventDefault();
+  }
+});
+
+/* -- Event Wiring -- */
 document.addEventListener("DOMContentLoaded", () => {
   // Setup
   initSetup();
