@@ -10,20 +10,30 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <!-- Language switcher (fixed, always visible) -->
+    <div class="lang-switcher" id="lang-switcher">
+      <!-- populated by JS from LANGUAGES array in i18n.js -->
+    </div>
+
+    <!-- SETUP SCREEN                                   -->
     <section id="screen-setup" class="screen">
       <div class="setup-header">
-        <div class="app-title">el-Impostor game</div>
-        <div class="app-subtitle">amogus but offline</div>
+        <div class="app-title" data-i18n="appTitle">el-Impostor game</div>
+        <div class="app-subtitle" data-i18n="appSubtitle">
+          amogus but offline
+        </div>
       </div>
 
       <!-- Players & Impostors -->
       <div class="card">
-        <div class="section-label">Players</div>
+        <div class="section-label" data-i18n="sectionPlayers">Players</div>
 
         <div class="counter-row">
           <div class="counter-label">
-            Total Players
-            <span>3 - 20 players</span>
+            <span data-i18n="totalPlayers">Total Players</span>
+            <span class="counter-sub" data-i18n="totalPlayersRange"
+              >3 – 20 players</span
+            >
           </div>
           <div class="counter-controls">
             <button class="btn-counter" id="btn-players-minus">−</button>
@@ -34,8 +44,10 @@
 
         <div class="counter-row">
           <div class="counter-label">
-            Impostors
-            <span>At least 2 civilians</span>
+            <span data-i18n="impostorsLabel">Impostors</span>
+            <span class="counter-sub" data-i18n="impostorsMin"
+              >At least 2 civilians</span
+            >
           </div>
           <div class="counter-controls">
             <button class="btn-counter" id="btn-impostors-minus">−</button>
@@ -48,7 +60,8 @@
       <!-- Player Names -->
       <div class="card">
         <div class="section-label">
-          Player Names <span class="label-muted">(optional)</span>
+          <span data-i18n="sectionNames">Player Names</span>
+          <span class="label-muted" data-i18n="namesOptional">(optional)</span>
         </div>
         <div class="player-names-grid" id="player-names-container">
           <!-- populated by JS -->
@@ -57,43 +70,54 @@
 
       <!-- Category -->
       <div class="card">
-        <div class="section-label">Word Category</div>
+        <div class="section-label" data-i18n="sectionCategory">
+          Word Category
+        </div>
         <select class="category-select" id="select-category">
           <!-- populated by JS -->
         </select>
       </div>
 
-      <!-- Game Type -->
+      <!-- Game Mode -->
       <div class="card">
-        <div class="section-label">Game Mode</div>
+        <div class="section-label" data-i18n="sectionMode">Game Mode</div>
         <div class="type-selector type-selector-3">
           <div class="type-option selected" data-type="no-word">
-            <div class="type-option-title">No Word</div>
-            <div class="type-option-desc">
+            <div class="type-option-title" data-i18n="modeNoWordTitle">
+              No Word
+            </div>
+            <div class="type-option-desc" data-i18n="modeNoWordDesc">
               Impostors receive no word and know they're the impostor
             </div>
           </div>
           <div class="type-option" data-type="related-word">
-            <div class="type-option-title">Related Word</div>
-            <div class="type-option-desc">
+            <div class="type-option-title" data-i18n="modeRelatedTitle">
+              Related Word
+            </div>
+            <div class="type-option-desc" data-i18n="modeRelatedDesc">
               Impostors see a related word and know they're the impostor
             </div>
           </div>
           <div class="type-option" data-type="clueless">
-            <div class="type-option-title">Clueless</div>
-            <div class="type-option-desc">
+            <div class="type-option-title" data-i18n="modeCluelessTitle">
+              Clueless
+            </div>
+            <div class="type-option-desc" data-i18n="modeCluelessDesc">
               Impostors see a related word but don't know they're the impostor
             </div>
           </div>
         </div>
       </div>
 
-      <button class="btn btn-primary" id="btn-start">Start Game</button>
+      <button class="btn btn-primary" id="btn-start" data-i18n="startGame">
+        Start Game
+      </button>
     </section>
 
+    <!-- REVEAL SCREEN                                  -->
     <section id="screen-reveal" class="screen">
       <div class="reveal-wrapper">
-        <div class="player-badge" id="reveal-player-label">Player 1 of 6</div>
+        <div class="player-badge" id="reveal-player-label"></div>
 
         <!-- Tap card -->
         <div class="tap-card locked" id="tap-card">
@@ -108,10 +132,15 @@
             "
           >
             <div class="tap-icon">👆</div>
-            <div style="font-size: 1.1rem; font-weight: 600">
+            <div
+              style="font-size: 1.1rem; font-weight: 600"
+              data-i18n="tapToSee"
+            >
               Tap to see your word
             </div>
-            <div class="tap-hint">Make sure nobody else can see the screen</div>
+            <div class="tap-hint" data-i18n="tapHint">
+              Make sure nobody else can see the screen
+            </div>
           </div>
 
           <!-- Unlocked view -->
@@ -124,9 +153,11 @@
               gap: 16px;
             "
           >
-            <div class="reveal-word" id="reveal-word">Word</div>
-            <div class="role-badge civilian" id="role-badge">Role</div>
-            <div class="reveal-tap-to-hide">Tap card to hide</div>
+            <div class="reveal-word" id="reveal-word"></div>
+            <div class="role-badge civilian" id="role-badge"></div>
+            <div class="reveal-tap-to-hide" data-i18n="tapToHide">
+              Tap card to hide
+            </div>
           </div>
         </div>
 
@@ -137,65 +168,70 @@
           class="btn btn-primary"
           id="btn-next-player"
           style="display: none"
-        >
-          Pass to Player 2
-        </button>
+        ></button>
       </div>
     </section>
 
+    <!-- GAME SCREEN                                    -->
     <section id="screen-game" class="screen">
       <div class="game-inner">
         <div class="game-icon">🕵️</div>
-        <div class="game-title">Game On!</div>
-        <div class="game-subtitle">
-          Everyone has their word.<br />
-          Discuss, debate, and find the impostor!
+        <div class="game-title" data-i18n="gameTitle">Game On!</div>
+        <div class="game-subtitle" data-i18n="gameSubtitle">
+          Everyone has their word. Discuss, debate, and find the impostor!
         </div>
 
         <div class="game-stats">
           <div class="stat-box">
             <div class="stat-value" id="stat-players">—</div>
-            <div class="stat-label">Players</div>
+            <div class="stat-label" data-i18n="statPlayers">Players</div>
           </div>
           <div class="stat-box">
             <div class="stat-value" id="stat-civilians">—</div>
-            <div class="stat-label">Civilians</div>
+            <div class="stat-label" data-i18n="statCivilians">Civilians</div>
           </div>
           <div class="stat-box">
             <div class="stat-value" id="stat-impostors">—</div>
-            <div class="stat-label">Impostors</div>
+            <div class="stat-label" data-i18n="statImpostors">Impostors</div>
           </div>
         </div>
 
-        <button class="btn btn-danger" id="btn-reveal-impostors">
+        <button
+          class="btn btn-danger"
+          id="btn-reveal-impostors"
+          data-i18n="revealImpostors"
+        >
           Reveal Impostors
         </button>
         <button
           class="btn btn-ghost"
           id="btn-back-setup"
-          onclick="backToSetup()"
+          data-i18n="backToSetup"
         >
           Back to Setup
         </button>
       </div>
     </section>
 
+    <!-- RESULTS SCREEN                                 -->
     <section id="screen-results" class="screen">
       <div class="results-header">
-        <div class="results-icon">🎉</div>
-        <div class="results-title">Impostors Revealed</div>
+        <div class="results-icon">🎭</div>
+        <div class="results-title" data-i18n="resultTitle">
+          Impostors Revealed
+        </div>
       </div>
 
       <!-- Words -->
       <div class="word-reveal-card">
         <div class="word-row">
-          <div class="word-type">Civilians' Word</div>
+          <div class="word-type" data-i18n="civiliansWord">Civilians' Word</div>
           <div class="word-value civilian-word" id="result-civilian-word">
             —
           </div>
         </div>
         <div class="word-row" id="result-impostor-row">
-          <div class="word-type">Impostors' Word</div>
+          <div class="word-type" data-i18n="impostorsWord">Impostors' Word</div>
           <div class="word-value impostor-word" id="result-impostor-word">
             —
           </div>
@@ -204,13 +240,18 @@
 
       <!-- Impostor list -->
       <div class="impostor-list">
-        <div class="impostor-list-title">The Impostors were</div>
+        <div class="impostor-list-title" data-i18n="theImpostorsWere">
+          The Impostors were
+        </div>
         <div id="impostor-list-items"></div>
       </div>
 
-      <button class="btn btn-primary" id="btn-play-again">Play Again</button>
+      <button class="btn btn-primary" id="btn-play-again" data-i18n="playAgain">
+        Play Again
+      </button>
     </section>
 
+    <script src="i18n.js"></script>
     <script src="words.js"></script>
     <script src="script.js"></script>
   </body>

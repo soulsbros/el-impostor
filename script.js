@@ -1,17 +1,47 @@
-/* -- State -- */
+/*  State  */
 const state = {
-  totalPlayers: 4,
+  totalPlayers: 6,
   numImpostors: 1,
   gameType: "no-word", // 'no-word' | 'related-word' | 'clueless'
+  lang: localStorage.getItem("impostor-lang") || "en",
   wordPair: null, // { civilian, impostor }
   players: [], // [{ id, isImpostor, word }]
-  playerNames: [], // display names, indexed by player order (0-based)
+  playerNames: [],
   currentRevealIndex: 0,
   cardRevealed: false,
   phase: "setup", // 'setup' | 'reveal' | 'game' | 'results'
 };
 
-/* -- localStorage helpers -- */
+/*  i18n helpers  */
+function t(key) {
+  return (
+    (TRANSLATIONS[state.lang] || TRANSLATIONS.en)[key] ??
+    TRANSLATIONS.en[key] ??
+    key
+  );
+}
+
+function applyTranslations() {
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    el.textContent = t(el.dataset.i18n);
+  });
+  document.querySelectorAll(".name-input").forEach((el, i) => {
+    el.placeholder = `${t("playerLabel")} ${i + 1}`;
+  });
+  document.querySelectorAll(".lang-btn").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.lang === state.lang);
+  });
+  document.documentElement.lang = state.lang;
+}
+
+function switchLanguage(lang) {
+  state.lang = lang;
+  localStorage.setItem("impostor-lang", lang);
+  applyTranslations();
+  renderCategorySelect();
+}
+
+/*  localStorage helpers  */
 const LS_KEY = "impostor-player-names";
 
 function loadStoredNames() {
@@ -29,7 +59,7 @@ function persistNames() {
   localStorage.setItem(LS_KEY, JSON.stringify(values));
 }
 
-/* -- Helpers -- */
+/*  Helpers  */
 function shuffle(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -50,22 +80,53 @@ function showScreen(id) {
   document.getElementById(id).classList.add("active");
 }
 
-/* -- Setup Screen -- */
+/*  Language switcher  */
+function initLangSwitcher() {
+  const container = document.getElementById("lang-switcher");
+  LANGUAGES.forEach((lang) => {
+    const btn = document.createElement("button");
+    btn.className = "lang-btn";
+    btn.dataset.lang = lang.code;
+    btn.textContent = lang.label;
+    btn.addEventListener("click", () => switchLanguage(lang.code));
+    container.appendChild(btn);
+  });
+}
+
+/*  Setup Screen  */
 function initSetup() {
   updateCounterUI("players", state.totalPlayers);
   updateCounterUI("impostors", state.numImpostors);
   setGameType(state.gameType);
+  renderCategorySelect();
+  renderNameInputs();
+}
 
+function renderCategorySelect() {
   const sel = document.getElementById("select-category");
+  const prev = sel.value;
   sel.innerHTML = "";
-  CATEGORIES.forEach((cat) => {
+
+  const pairs = WORD_PAIRS[state.lang] || WORD_PAIRS.en;
+  const categories = [...new Set(pairs.map((p) => p.category))];
+
+  // Random option uses a stable sentinel value so filtering logic is language-agnostic
+  const randomOpt = document.createElement("option");
+  randomOpt.value = "__random__";
+  randomOpt.textContent = t("categoryRandom");
+  sel.appendChild(randomOpt);
+
+  categories.forEach((cat) => {
     const opt = document.createElement("option");
     opt.value = cat;
     opt.textContent = cat;
     sel.appendChild(opt);
   });
 
-  renderNameInputs();
+  // Restore selection if the same category exists in the new language (best-effort)
+  if (prev && [...sel.options].some((o) => o.value === prev)) {
+    sel.value = prev;
+  }
 }
 
 function renderNameInputs() {
@@ -76,7 +137,7 @@ function renderNameInputs() {
     const input = document.createElement("input");
     input.type = "text";
     input.className = "name-input";
-    input.placeholder = `Player ${i + 1}`;
+    input.placeholder = `${t("playerLabel")} ${i + 1}`;
     input.value = stored[i] || "";
     input.maxLength = 20;
     input.addEventListener("input", persistNames);
@@ -86,7 +147,7 @@ function renderNameInputs() {
 
 function getPlayerName(index) {
   const inputs = document.querySelectorAll(".name-input");
-  return inputs[index]?.value.trim() || `Player ${index + 1}`;
+  return inputs[index]?.value.trim() || `${t("playerLabel")} ${index + 1}`;
 }
 
 function updateCounterUI(type, value) {
@@ -105,7 +166,6 @@ function updateCounterUI(type, value) {
 function changeCounter(type, delta) {
   if (type === "players") {
     state.totalPlayers = Math.min(20, Math.max(3, state.totalPlayers + delta));
-    // Clamp impostors
     const maxImpostors = state.totalPlayers - 2;
     if (state.numImpostors > maxImpostors) {
       state.numImpostors = maxImpostors;
@@ -129,15 +189,14 @@ function setGameType(type) {
 }
 
 function startGame() {
-  // Pick a random word pair from selected category
   const category = document.getElementById("select-category").value;
+  const pairs = WORD_PAIRS[state.lang] || WORD_PAIRS.en;
   const pool =
-    category === "Random"
-      ? WORD_PAIRS
-      : WORD_PAIRS.filter((p) => p.category === category);
+    category === "__random__"
+      ? pairs
+      : pairs.filter((p) => p.category === category);
   state.wordPair = pickRandom(pool);
 
-  // Assign roles
   const indices = Array.from({ length: state.totalPlayers }, (_, i) => i);
   const impostorIndices = new Set(
     shuffle(indices).slice(0, state.numImpostors),
@@ -151,7 +210,6 @@ function startGame() {
     } else if (state.gameType === "no-word") {
       word = "";
     } else {
-      // 'related-word' and 'clueless' both use the impostor word
       word = state.wordPair.impostor;
     }
     return { id: i + 1, isImpostor, word };
@@ -166,18 +224,16 @@ function startGame() {
   renderRevealCard();
 }
 
-/* -- Reveal Screen -- */
+/*  Reveal Screen  */
 function renderRevealCard() {
   const player = state.players[state.currentRevealIndex];
   const total = state.players.length;
   const idx = state.currentRevealIndex;
 
-  // Header
   const name = state.playerNames[idx];
   document.getElementById("reveal-player-label").textContent =
-    `${name} (${idx + 1} of ${total})`;
+    `${name} (${idx + 1} ${t("ofLabel")} ${total})`;
 
-  // Progress dots
   const dotsEl = document.getElementById("progress-dots");
   dotsEl.innerHTML = "";
   for (let i = 0; i < total; i++) {
@@ -187,16 +243,13 @@ function renderRevealCard() {
     dotsEl.appendChild(dot);
   }
 
-  // Card state
   setCardLocked();
 
-  // Next button label
   const nextBtn = document.getElementById("btn-next-player");
-  if (idx === total - 1) {
-    nextBtn.textContent = "Start Game";
-  } else {
-    nextBtn.textContent = `Pass to ${state.playerNames[idx + 1]}`;
-  }
+  nextBtn.textContent =
+    idx === total - 1
+      ? t("startGame")
+      : `${t("passTo")} ${state.playerNames[idx + 1]}`;
   nextBtn.style.display = "none";
 }
 
@@ -226,42 +279,29 @@ function revealCard() {
   card.classList.remove("locked");
   card.classList.add("unlocked");
   document.getElementById("card-locked-view").style.display = "none";
+  document.getElementById("card-unlocked-view").style.display = "flex";
 
-  const view = document.getElementById("card-unlocked-view");
-  view.style.display = "flex";
-
-  // Word display
   const wordEl = document.getElementById("reveal-word");
   if (player.word === "") {
-    wordEl.textContent = "No word";
+    wordEl.textContent = t("noWord");
     wordEl.className = "reveal-word no-word";
   } else {
     wordEl.textContent = player.word;
     wordEl.className = "reveal-word";
   }
 
-  // Role badge — hidden for everyone in clueless mode
   const roleBadge = document.getElementById("role-badge");
-  const showRole = state.gameType !== "clueless";
-
-  if (showRole) {
+  if (state.gameType !== "clueless") {
     roleBadge.style.display = "inline-flex";
-    if (player.isImpostor) {
-      roleBadge.textContent = "🕵️ You are an Impostor";
-      roleBadge.className = "role-badge impostor";
-    } else {
-      roleBadge.textContent = "👤 You are a Civilian";
-      roleBadge.className = "role-badge civilian";
-    }
+    roleBadge.textContent = t(
+      player.isImpostor ? "roleImpostor" : "roleCivilian",
+    );
+    roleBadge.className = `role-badge ${player.isImpostor ? "impostor" : "civilian"}`;
   } else {
     roleBadge.style.display = "none";
   }
 
   document.getElementById("btn-next-player").style.display = "flex";
-}
-
-function hideCard() {
-  setCardLocked();
 }
 
 function nextPlayer() {
@@ -274,37 +314,33 @@ function nextPlayer() {
   }
 }
 
-/* -- Game Screen -- */
+/*  Game Screen  */
 function beginGame() {
   state.phase = "game";
   showScreen("screen-game");
-
   document.getElementById("stat-players").textContent = state.totalPlayers;
   document.getElementById("stat-impostors").textContent = state.numImpostors;
   document.getElementById("stat-civilians").textContent =
     state.totalPlayers - state.numImpostors;
 }
 
-/* -- Results Screen -- */
+/*  Results Screen  */
 function showResults() {
   state.phase = "results";
   showScreen("screen-results");
 
-  // Word reveal
-  const civWordEl = document.getElementById("result-civilian-word");
-  const impWordEl = document.getElementById("result-impostor-word");
+  document.getElementById("result-civilian-word").textContent =
+    state.wordPair.civilian;
+
   const impWordRow = document.getElementById("result-impostor-row");
-
-  civWordEl.textContent = state.wordPair.civilian;
-
   if (state.gameType === "related-word" || state.gameType === "clueless") {
-    impWordEl.textContent = state.wordPair.impostor;
+    document.getElementById("result-impostor-word").textContent =
+      state.wordPair.impostor;
     impWordRow.style.display = "flex";
   } else {
     impWordRow.style.display = "none";
   }
 
-  // Impostor list
   const listEl = document.getElementById("impostor-list-items");
   listEl.innerHTML = "";
   state.players
@@ -313,35 +349,35 @@ function showResults() {
       const item = document.createElement("div");
       item.className = "impostor-item";
       item.innerHTML = `
-        <div class="impostor-avatar">${p.id}</div>
-        <div class="impostor-name">${state.playerNames[p.id - 1]}</div>
-      `;
+      <div class="impostor-avatar">${p.id}</div>
+      <div class="impostor-name">${state.playerNames[p.id - 1]}</div>
+    `;
       listEl.appendChild(item);
     });
 }
 
-/* -- Navigation -- */
+/*  Navigation  */
 function playAgain() {
   state.phase = "setup";
   showScreen("screen-setup");
 }
+
 function backToSetup() {
-  if (!confirm("Go back to setup? The current game will be lost.")) return;
+  if (!confirm(t("confirmBackToSetup"))) return;
   state.phase = "setup";
   showScreen("screen-setup");
 }
 
-/* -- Reload guard -- */
+/*  Reload guard  */
 window.addEventListener("beforeunload", (e) => {
-  if (state.phase !== "setup") {
-    e.preventDefault();
-  }
+  if (state.phase !== "setup") e.preventDefault();
 });
 
-/* -- Event Wiring -- */
+/*  Event Wiring  */
 document.addEventListener("DOMContentLoaded", () => {
-  // Setup
+  initLangSwitcher();
   initSetup();
+  applyTranslations();
   showScreen("screen-setup");
 
   document
@@ -362,19 +398,16 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("btn-start").addEventListener("click", startGame);
-
-  // Reveal
   document.getElementById("tap-card").addEventListener("click", handleCardTap);
   document
     .getElementById("btn-next-player")
     .addEventListener("click", nextPlayer);
-
-  // Game
   document
     .getElementById("btn-reveal-impostors")
     .addEventListener("click", showResults);
-
-  // Results
+  document
+    .getElementById("btn-back-setup")
+    .addEventListener("click", backToSetup);
   document
     .getElementById("btn-play-again")
     .addEventListener("click", playAgain);
