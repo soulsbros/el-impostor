@@ -45,6 +45,24 @@
         </div>
       </div>
 
+      <!-- Player Names -->
+      <div class="card">
+        <div class="section-label">
+          Player Names <span class="label-muted">(optional)</span>
+        </div>
+        <div class="player-names-grid" id="player-names-container">
+          <!-- populated by JS -->
+        </div>
+      </div>
+
+      <!-- Category -->
+      <div class="card">
+        <div class="section-label">Word Category</div>
+        <select class="category-select" id="select-category">
+          <!-- populated by JS -->
+        </select>
+      </div>
+
       <!-- Game Type -->
       <div class="card">
         <div class="section-label">Game Mode</div>
@@ -68,14 +86,6 @@
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- Category -->
-      <div class="card">
-        <div class="section-label">Word Category</div>
-        <select class="category-select" id="select-category">
-          <!-- populated by JS -->
-        </select>
       </div>
 
       <button class="btn btn-primary" id="btn-start">Start Game</button>
@@ -160,7 +170,11 @@
         <button class="btn btn-danger" id="btn-reveal-impostors">
           Reveal Impostors
         </button>
-        <button class="btn btn-ghost" id="btn-back-setup" onclick="playAgain()">
+        <button
+          class="btn btn-ghost"
+          id="btn-back-setup"
+          onclick="backToSetup()"
+        >
           Back to Setup
         </button>
       </div>

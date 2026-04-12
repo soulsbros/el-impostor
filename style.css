@@ -285,6 +285,42 @@ body {
   line-height: 1.3;
 }
 
+/* ── Player names ──────────────────────────────────── */
+.label-muted {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+}
+
+.player-names-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.name-input {
+  background: var(--card-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 10px 12px;
+  width: 100%;
+  transition: border-color 0.15s;
+}
+
+.name-input::placeholder {
+  color: var(--text-muted);
+}
+
+.name-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
 /* ── Category select ───────────────────────────────── */
 .category-select {
   width: 100%;

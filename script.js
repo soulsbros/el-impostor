@@ -5,10 +5,29 @@ const state = {
   gameType: "no-word", // 'no-word' | 'related-word' | 'clueless'
   wordPair: null, // { civilian, impostor }
   players: [], // [{ id, isImpostor, word }]
+  playerNames: [], // display names, indexed by player order (0-based)
   currentRevealIndex: 0,
   cardRevealed: false,
   phase: "setup", // 'setup' | 'reveal' | 'game' | 'results'
 };
+
+/* -- localStorage helpers -- */
+const LS_KEY = "impostor-player-names";
+
+function loadStoredNames() {
+  try {
+    return JSON.parse(localStorage.getItem(LS_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function persistNames() {
+  const values = Array.from(document.querySelectorAll(".name-input")).map(
+    (el) => el.value.trim(),
+  );
+  localStorage.setItem(LS_KEY, JSON.stringify(values));
+}
 
 /* -- Helpers -- */
 function shuffle(arr) {
@@ -45,6 +64,29 @@ function initSetup() {
     opt.textContent = cat;
     sel.appendChild(opt);
   });
+
+  renderNameInputs();
+}
+
+function renderNameInputs() {
+  const stored = loadStoredNames();
+  const container = document.getElementById("player-names-container");
+  container.innerHTML = "";
+  for (let i = 0; i < state.totalPlayers; i++) {
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "name-input";
+    input.placeholder = `Player ${i + 1}`;
+    input.value = stored[i] || "";
+    input.maxLength = 20;
+    input.addEventListener("input", persistNames);
+    container.appendChild(input);
+  }
+}
+
+function getPlayerName(index) {
+  const inputs = document.querySelectorAll(".name-input");
+  return inputs[index]?.value.trim() || `Player ${index + 1}`;
 }
 
 function updateCounterUI(type, value) {
@@ -71,6 +113,7 @@ function changeCounter(type, delta) {
     }
     updateCounterUI("players", state.totalPlayers);
     updateCounterUI("impostors", state.numImpostors);
+    renderNameInputs();
   } else {
     const max = state.totalPlayers - 2;
     state.numImpostors = Math.min(max, Math.max(1, state.numImpostors + delta));
@@ -114,6 +157,7 @@ function startGame() {
     return { id: i + 1, isImpostor, word };
   });
 
+  state.playerNames = indices.map((i) => getPlayerName(i));
   state.currentRevealIndex = 0;
   state.cardRevealed = false;
   state.phase = "reveal";
@@ -129,8 +173,9 @@ function renderRevealCard() {
   const idx = state.currentRevealIndex;
 
   // Header
+  const name = state.playerNames[idx];
   document.getElementById("reveal-player-label").textContent =
-    `Player ${player.id} of ${total}`;
+    `${name} (${idx + 1} of ${total})`;
 
   // Progress dots
   const dotsEl = document.getElementById("progress-dots");
@@ -150,7 +195,7 @@ function renderRevealCard() {
   if (idx === total - 1) {
     nextBtn.textContent = "Start Game";
   } else {
-    nextBtn.textContent = `Pass to Player ${player.id + 1}`;
+    nextBtn.textContent = `Pass to ${state.playerNames[idx + 1]}`;
   }
   nextBtn.style.display = "none";
 }
@@ -269,14 +314,18 @@ function showResults() {
       item.className = "impostor-item";
       item.innerHTML = `
         <div class="impostor-avatar">${p.id}</div>
-        <div class="impostor-name">Player ${p.id}</div>
+        <div class="impostor-name">${state.playerNames[p.id - 1]}</div>
       `;
       listEl.appendChild(item);
     });
 }
 
-/* -- Play Again -- */
+/* -- Navigation -- */
 function playAgain() {
+  state.phase = "setup";
+  showScreen("screen-setup");
+}
+function backToSetup() {
   if (!confirm("Go back to setup? The current game will be lost.")) return;
   state.phase = "setup";
   showScreen("screen-setup");
