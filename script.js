@@ -1,14 +1,13 @@
 /* ── State ─────────────────────────────────────────── */
 const state = {
-  totalPlayers: 6,
+  totalPlayers: 4,
   numImpostors: 1,
-  gameType: 'no-word',    // 'no-word' | 'related-word'
-  clueless: false,
-  wordPair: null,          // { civilian, impostor }
-  players: [],             // [{ id, isImpostor, word }]
+  gameType: "no-word", // 'no-word' | 'related-word' | 'clueless'
+  wordPair: null, // { civilian, impostor }
+  players: [], // [{ id, isImpostor, word }]
   currentRevealIndex: 0,
   cardRevealed: false,
-  phase: 'setup',         // 'setup' | 'reveal' | 'game' | 'results'
+  phase: "setup", // 'setup' | 'reveal' | 'game' | 'results'
 };
 
 /* ── Helpers ───────────────────────────────────────── */
@@ -26,17 +25,17 @@ function pickRandom(arr) {
 }
 
 function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  document
+    .querySelectorAll(".screen")
+    .forEach((s) => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
 }
 
 /* ── Setup Screen ──────────────────────────────────── */
 function initSetup() {
-  updateCounterUI('players', state.totalPlayers);
-  updateCounterUI('impostors', state.numImpostors);
+  updateCounterUI("players", state.totalPlayers);
+  updateCounterUI("impostors", state.numImpostors);
   setGameType(state.gameType);
-  document.getElementById('toggle-clueless').checked = state.clueless;
-  updateCluelessDescription();
 }
 
 function updateCounterUI(type, value) {
@@ -44,45 +43,37 @@ function updateCounterUI(type, value) {
   const minMap = { players: 3, impostors: 1 };
   const maxMap = {
     players: 20,
-    get impostors() { return state.totalPlayers - 2; }
+    get impostors() {
+      return state.totalPlayers - 2;
+    },
   };
   document.getElementById(`btn-${type}-minus`).disabled = value <= minMap[type];
-  document.getElementById(`btn-${type}-plus`).disabled  = value >= maxMap[type];
+  document.getElementById(`btn-${type}-plus`).disabled = value >= maxMap[type];
 }
 
 function changeCounter(type, delta) {
-  if (type === 'players') {
+  if (type === "players") {
     state.totalPlayers = Math.min(20, Math.max(3, state.totalPlayers + delta));
     // Clamp impostors
     const maxImpostors = state.totalPlayers - 2;
     if (state.numImpostors > maxImpostors) {
       state.numImpostors = maxImpostors;
-      updateCounterUI('impostors', state.numImpostors);
+      updateCounterUI("impostors", state.numImpostors);
     }
-    updateCounterUI('players', state.totalPlayers);
-    updateCounterUI('impostors', state.numImpostors);
+    updateCounterUI("players", state.totalPlayers);
+    updateCounterUI("impostors", state.numImpostors);
   } else {
     const max = state.totalPlayers - 2;
     state.numImpostors = Math.min(max, Math.max(1, state.numImpostors + delta));
-    updateCounterUI('impostors', state.numImpostors);
+    updateCounterUI("impostors", state.numImpostors);
   }
 }
 
 function setGameType(type) {
   state.gameType = type;
-  document.querySelectorAll('.type-option').forEach(el => {
-    el.classList.toggle('selected', el.dataset.type === type);
+  document.querySelectorAll(".type-option").forEach((el) => {
+    el.classList.toggle("selected", el.dataset.type === type);
   });
-  updateCluelessDescription();
-}
-
-function updateCluelessDescription() {
-  const desc = document.getElementById('clueless-desc');
-  if (state.gameType === 'no-word') {
-    desc.textContent = 'Impostors see no word but are not told they\'re the impostor.';
-  } else {
-    desc.textContent = 'Impostors see a different word but are not told they\'re the impostor.';
-  }
 }
 
 function startGame() {
@@ -91,16 +82,19 @@ function startGame() {
 
   // Assign roles
   const indices = Array.from({ length: state.totalPlayers }, (_, i) => i);
-  const impostorIndices = new Set(shuffle(indices).slice(0, state.numImpostors));
+  const impostorIndices = new Set(
+    shuffle(indices).slice(0, state.numImpostors),
+  );
 
-  state.players = indices.map(i => {
+  state.players = indices.map((i) => {
     const isImpostor = impostorIndices.has(i);
     let word;
     if (!isImpostor) {
       word = state.wordPair.civilian;
-    } else if (state.gameType === 'no-word') {
-      word = '';
+    } else if (state.gameType === "no-word") {
+      word = "";
     } else {
+      // 'related-word' and 'clueless' both use the impostor word
       word = state.wordPair.impostor;
     }
     return { id: i + 1, isImpostor, word };
@@ -108,28 +102,29 @@ function startGame() {
 
   state.currentRevealIndex = 0;
   state.cardRevealed = false;
-  state.phase = 'reveal';
+  state.phase = "reveal";
 
-  showScreen('screen-reveal');
+  showScreen("screen-reveal");
   renderRevealCard();
 }
 
 /* ── Reveal Screen ─────────────────────────────────── */
 function renderRevealCard() {
   const player = state.players[state.currentRevealIndex];
-  const total  = state.players.length;
-  const idx    = state.currentRevealIndex;
+  const total = state.players.length;
+  const idx = state.currentRevealIndex;
 
   // Header
-  document.getElementById('reveal-player-label').textContent =
+  document.getElementById("reveal-player-label").textContent =
     `Player ${player.id} of ${total}`;
 
   // Progress dots
-  const dotsEl = document.getElementById('progress-dots');
-  dotsEl.innerHTML = '';
+  const dotsEl = document.getElementById("progress-dots");
+  dotsEl.innerHTML = "";
   for (let i = 0; i < total; i++) {
-    const dot = document.createElement('div');
-    dot.className = 'progress-dot' + (i < idx ? ' done' : i === idx ? ' current' : '');
+    const dot = document.createElement("div");
+    dot.className =
+      "progress-dot" + (i < idx ? " done" : i === idx ? " current" : "");
     dotsEl.appendChild(dot);
   }
 
@@ -137,23 +132,23 @@ function renderRevealCard() {
   setCardLocked();
 
   // Next button label
-  const nextBtn = document.getElementById('btn-next-player');
+  const nextBtn = document.getElementById("btn-next-player");
   if (idx === total - 1) {
-    nextBtn.textContent = 'Start Game';
+    nextBtn.textContent = "Start Game";
   } else {
     nextBtn.textContent = `Pass to Player ${player.id + 1}`;
   }
-  nextBtn.style.display = 'none';
+  nextBtn.style.display = "none";
 }
 
 function setCardLocked() {
   state.cardRevealed = false;
-  const card = document.getElementById('tap-card');
-  card.classList.remove('unlocked');
-  card.classList.add('locked');
-  document.getElementById('card-locked-view').style.display = 'flex';
-  document.getElementById('card-unlocked-view').style.display = 'none';
-  document.getElementById('btn-next-player').style.display = 'none';
+  const card = document.getElementById("tap-card");
+  card.classList.remove("unlocked");
+  card.classList.add("locked");
+  document.getElementById("card-locked-view").style.display = "flex";
+  document.getElementById("card-unlocked-view").style.display = "none";
+  document.getElementById("btn-next-player").style.display = "none";
 }
 
 function handleCardTap() {
@@ -167,43 +162,43 @@ function handleCardTap() {
 function revealCard() {
   state.cardRevealed = true;
   const player = state.players[state.currentRevealIndex];
-  const card   = document.getElementById('tap-card');
+  const card = document.getElementById("tap-card");
 
-  card.classList.remove('locked');
-  card.classList.add('unlocked');
-  document.getElementById('card-locked-view').style.display = 'none';
+  card.classList.remove("locked");
+  card.classList.add("unlocked");
+  document.getElementById("card-locked-view").style.display = "none";
 
-  const view = document.getElementById('card-unlocked-view');
-  view.style.display = 'flex';
+  const view = document.getElementById("card-unlocked-view");
+  view.style.display = "flex";
 
   // Word display
-  const wordEl = document.getElementById('reveal-word');
-  if (player.word === '') {
-    wordEl.textContent = 'No word';
-    wordEl.className = 'reveal-word no-word';
+  const wordEl = document.getElementById("reveal-word");
+  if (player.word === "") {
+    wordEl.textContent = "No word";
+    wordEl.className = "reveal-word no-word";
   } else {
     wordEl.textContent = player.word;
-    wordEl.className = 'reveal-word';
+    wordEl.className = "reveal-word";
   }
 
-  // Role badge — show only if not clueless OR if civilian
-  const roleBadge = document.getElementById('role-badge');
-  const showRole = !player.isImpostor || !state.clueless;
+  // Role badge — hidden for everyone in clueless mode
+  const roleBadge = document.getElementById("role-badge");
+  const showRole = state.gameType !== "clueless";
 
   if (showRole) {
-    roleBadge.style.display = 'inline-flex';
+    roleBadge.style.display = "inline-flex";
     if (player.isImpostor) {
-      roleBadge.textContent = '🕵️ You are an Impostor';
-      roleBadge.className = 'role-badge impostor';
+      roleBadge.textContent = "🕵️ You are an Impostor";
+      roleBadge.className = "role-badge impostor";
     } else {
-      roleBadge.textContent = '👤 You are a Civilian';
-      roleBadge.className = 'role-badge civilian';
+      roleBadge.textContent = "👤 You are a Civilian";
+      roleBadge.className = "role-badge civilian";
     }
   } else {
-    roleBadge.style.display = 'none';
+    roleBadge.style.display = "none";
   }
 
-  document.getElementById('btn-next-player').style.display = 'flex';
+  document.getElementById("btn-next-player").style.display = "flex";
 }
 
 function hideCard() {
@@ -222,41 +217,42 @@ function nextPlayer() {
 
 /* ── Game Screen ───────────────────────────────────── */
 function beginGame() {
-  state.phase = 'game';
-  showScreen('screen-game');
+  state.phase = "game";
+  showScreen("screen-game");
 
-  document.getElementById('stat-players').textContent = state.totalPlayers;
-  document.getElementById('stat-impostors').textContent = state.numImpostors;
-  document.getElementById('stat-civilians').textContent = state.totalPlayers - state.numImpostors;
+  document.getElementById("stat-players").textContent = state.totalPlayers;
+  document.getElementById("stat-impostors").textContent = state.numImpostors;
+  document.getElementById("stat-civilians").textContent =
+    state.totalPlayers - state.numImpostors;
 }
 
 /* ── Results Screen ────────────────────────────────── */
 function showResults() {
-  state.phase = 'results';
-  showScreen('screen-results');
+  state.phase = "results";
+  showScreen("screen-results");
 
   // Word reveal
-  const civWordEl = document.getElementById('result-civilian-word');
-  const impWordEl = document.getElementById('result-impostor-word');
-  const impWordRow = document.getElementById('result-impostor-row');
+  const civWordEl = document.getElementById("result-civilian-word");
+  const impWordEl = document.getElementById("result-impostor-word");
+  const impWordRow = document.getElementById("result-impostor-row");
 
   civWordEl.textContent = state.wordPair.civilian;
 
-  if (state.gameType === 'related-word') {
+  if (state.gameType === "related-word" || state.gameType === "clueless") {
     impWordEl.textContent = state.wordPair.impostor;
-    impWordRow.style.display = 'flex';
+    impWordRow.style.display = "flex";
   } else {
-    impWordRow.style.display = 'none';
+    impWordRow.style.display = "none";
   }
 
   // Impostor list
-  const listEl = document.getElementById('impostor-list-items');
-  listEl.innerHTML = '';
+  const listEl = document.getElementById("impostor-list-items");
+  listEl.innerHTML = "";
   state.players
-    .filter(p => p.isImpostor)
-    .forEach(p => {
-      const item = document.createElement('div');
-      item.className = 'impostor-item';
+    .filter((p) => p.isImpostor)
+    .forEach((p) => {
+      const item = document.createElement("div");
+      item.className = "impostor-item";
       item.innerHTML = `
         <div class="impostor-avatar">${p.id}</div>
         <div class="impostor-name">Player ${p.id}</div>
@@ -267,38 +263,48 @@ function showResults() {
 
 /* ── Play Again ────────────────────────────────────── */
 function playAgain() {
-  state.phase = 'setup';
-  showScreen('screen-setup');
+  state.phase = "setup";
+  showScreen("screen-setup");
 }
 
 /* ── Event Wiring ──────────────────────────────────── */
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   // Setup
   initSetup();
-  showScreen('screen-setup');
+  showScreen("screen-setup");
 
-  document.getElementById('btn-players-minus').addEventListener('click', () => changeCounter('players', -1));
-  document.getElementById('btn-players-plus').addEventListener('click',  () => changeCounter('players', +1));
-  document.getElementById('btn-impostors-minus').addEventListener('click', () => changeCounter('impostors', -1));
-  document.getElementById('btn-impostors-plus').addEventListener('click',  () => changeCounter('impostors', +1));
+  document
+    .getElementById("btn-players-minus")
+    .addEventListener("click", () => changeCounter("players", -1));
+  document
+    .getElementById("btn-players-plus")
+    .addEventListener("click", () => changeCounter("players", +1));
+  document
+    .getElementById("btn-impostors-minus")
+    .addEventListener("click", () => changeCounter("impostors", -1));
+  document
+    .getElementById("btn-impostors-plus")
+    .addEventListener("click", () => changeCounter("impostors", +1));
 
-  document.querySelectorAll('.type-option').forEach(el => {
-    el.addEventListener('click', () => setGameType(el.dataset.type));
+  document.querySelectorAll(".type-option").forEach((el) => {
+    el.addEventListener("click", () => setGameType(el.dataset.type));
   });
 
-  document.getElementById('toggle-clueless').addEventListener('change', e => {
-    state.clueless = e.target.checked;
-  });
-
-  document.getElementById('btn-start').addEventListener('click', startGame);
+  document.getElementById("btn-start").addEventListener("click", startGame);
 
   // Reveal
-  document.getElementById('tap-card').addEventListener('click', handleCardTap);
-  document.getElementById('btn-next-player').addEventListener('click', nextPlayer);
+  document.getElementById("tap-card").addEventListener("click", handleCardTap);
+  document
+    .getElementById("btn-next-player")
+    .addEventListener("click", nextPlayer);
 
   // Game
-  document.getElementById('btn-reveal-impostors').addEventListener('click', showResults);
+  document
+    .getElementById("btn-reveal-impostors")
+    .addEventListener("click", showResults);
 
   // Results
-  document.getElementById('btn-play-again').addEventListener('click', playAgain);
+  document
+    .getElementById("btn-play-again")
+    .addEventListener("click", playAgain);
 });

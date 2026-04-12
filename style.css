@@ -253,6 +253,10 @@ body {
   gap: 10px;
 }
 
+.type-selector-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
 .type-option {
   background: var(--card-alt);
   border: 2px solid var(--border);
