@@ -13,13 +13,13 @@ const LANGUAGES = [
 const TRANSLATIONS = {
   en: {
     // App header
-    appTitle: "el-Impostor game",
-    appSubtitle: "amogus but offline",
+    appTitle: "el-impostor",
+    appSubtitle: "...what's the word again?",
 
     // Setup — players card
     sectionPlayers: "Players",
     totalPlayers: "Total Players",
-    totalPlayersRange: "3 – 20 players",
+    totalPlayersRange: "3 - 20 players",
     impostorsLabel: "Impostors",
     impostorsMin: "At least 2 civilians",
 
@@ -48,7 +48,7 @@ const TRANSLATIONS = {
 
     // Reveal screen
     tapToSee: "Tap to see your word",
-    tapHint: "Make sure nobody else can see the screen",
+    tapHint: "Make sure nobody else can see the screen!",
     roleCivilian: "👤 You are a Civilian",
     roleImpostor: "🕵️ You are an Impostor",
     tapToHide: "Tap card to hide",
@@ -80,12 +80,12 @@ const TRANSLATIONS = {
   it: {
     // App header
     appTitle: "el-impostor ",
-    appSubtitle: "amogus ma offline",
+    appSubtitle: "...cos'è già la parola?",
 
     // Setup — players card
     sectionPlayers: "Giocatori",
     totalPlayers: "Giocatori totali",
-    totalPlayersRange: "3 – 20 giocatori",
+    totalPlayersRange: "3 - 20 giocatori",
     impostorsLabel: "Impostori",
     impostorsMin: "Almeno 2 civili",
 
@@ -115,7 +115,7 @@ const TRANSLATIONS = {
 
     // Reveal screen
     tapToSee: "Tocca per vedere la tua parola",
-    tapHint: "Assicurati che nessun altro veda lo schermo",
+    tapHint: "Assicurati che nessun altro veda lo schermo!",
     roleCivilian: "👤 Sei un civile",
     roleImpostor: "🕵️ Sei un impostore",
     tapToHide: "Tocca per nascondere",

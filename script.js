@@ -1,6 +1,6 @@
 /*  State  */
 const state = {
-  totalPlayers: 6,
+  totalPlayers: 4,
   numImpostors: 1,
   gameType: "no-word", // 'no-word' | 'related-word' | 'clueless'
   lang: localStorage.getItem("impostor-lang") || "en",
@@ -226,7 +226,6 @@ function startGame() {
 
 /*  Reveal Screen  */
 function renderRevealCard() {
-  const player = state.players[state.currentRevealIndex];
   const total = state.players.length;
   const idx = state.currentRevealIndex;
 
@@ -264,10 +263,10 @@ function setCardLocked() {
 }
 
 function handleCardTap() {
-  if (!state.cardRevealed) {
-    revealCard();
-  } else {
+  if (state.cardRevealed) {
     nextPlayer();
+  } else {
+    revealCard();
   }
 }
 
@@ -291,14 +290,14 @@ function revealCard() {
   }
 
   const roleBadge = document.getElementById("role-badge");
-  if (state.gameType !== "clueless") {
+  if (state.gameType === "clueless") {
+    roleBadge.style.display = "none";
+  } else {
     roleBadge.style.display = "inline-flex";
     roleBadge.textContent = t(
       player.isImpostor ? "roleImpostor" : "roleCivilian",
     );
     roleBadge.className = `role-badge ${player.isImpostor ? "impostor" : "civilian"}`;
-  } else {
-    roleBadge.style.display = "none";
   }
 
   document.getElementById("btn-next-player").style.display = "flex";

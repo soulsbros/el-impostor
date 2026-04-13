@@ -1,26 +1,42 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-CH">
   <head>
     <meta charset="UTF-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <title>Impostor Game</title>
+    <title>el-impostor</title>
+    <meta name="description" content="A simple impostor game" />
+    <link rel="author" href="https://soulsbros.ch" />
+    <meta name="author" content="Soulsbros" />
+
+    <meta property="og:site_name" content="el-impostor" />
+    <meta property="og:title" content="el-impostor" />
+    <meta property="og:description" content="A simple impostor game" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://el-impostor.soulsbros.ch/" />
+    <meta
+      property="og:image"
+      content="https://el-impostor.soulsbros.ch/favicon.ico"
+    />
+
     <link rel="stylesheet" href="style.css" />
+    <link rel="shortcut icon" href="favicon.ico" />
   </head>
+
   <body>
     <!-- Language switcher (fixed, always visible) -->
     <div class="lang-switcher" id="lang-switcher">
       <!-- populated by JS from LANGUAGES array in i18n.js -->
     </div>
 
-    <!-- SETUP SCREEN                                   -->
+    <!-- SETUP SCREEN -->
     <section id="screen-setup" class="screen">
       <div class="setup-header">
-        <div class="app-title" data-i18n="appTitle">el-Impostor game</div>
+        <div class="app-title" data-i18n="appTitle">el-impostor</div>
         <div class="app-subtitle" data-i18n="appSubtitle">
-          amogus but offline
+          ...what's the word again?
         </div>
       </div>
 
@@ -32,11 +48,11 @@
           <div class="counter-label">
             <span data-i18n="totalPlayers">Total Players</span>
             <span class="counter-sub" data-i18n="totalPlayersRange"
-              >3 – 20 players</span
+              >3 - 20 players</span
             >
           </div>
           <div class="counter-controls">
-            <button class="btn-counter" id="btn-players-minus">−</button>
+            <button class="btn-counter" id="btn-players-minus">-</button>
             <span class="counter-value" id="players-value">6</span>
             <button class="btn-counter" id="btn-players-plus">+</button>
           </div>
@@ -50,7 +66,7 @@
             >
           </div>
           <div class="counter-controls">
-            <button class="btn-counter" id="btn-impostors-minus">−</button>
+            <button class="btn-counter" id="btn-impostors-minus">-</button>
             <span class="counter-value" id="impostors-value">1</span>
             <button class="btn-counter" id="btn-impostors-plus">+</button>
           </div>
@@ -114,7 +130,7 @@
       </button>
     </section>
 
-    <!-- REVEAL SCREEN                                  -->
+    <!-- REVEAL SCREEN  -->
     <section id="screen-reveal" class="screen">
       <div class="reveal-wrapper">
         <div class="player-badge" id="reveal-player-label"></div>
@@ -139,7 +155,7 @@
               Tap to see your word
             </div>
             <div class="tap-hint" data-i18n="tapHint">
-              Make sure nobody else can see the screen
+              Make sure nobody else can see the screen!
             </div>
           </div>
 
@@ -172,7 +188,7 @@
       </div>
     </section>
 
-    <!-- GAME SCREEN                                    -->
+    <!-- GAME SCREEN -->
     <section id="screen-game" class="screen">
       <div class="game-inner">
         <div class="game-icon">🕵️</div>
@@ -213,10 +229,10 @@
       </div>
     </section>
 
-    <!-- RESULTS SCREEN                                 -->
+    <!-- RESULTS SCREEN -->
     <section id="screen-results" class="screen">
       <div class="results-header">
-        <div class="results-icon">🎭</div>
+        <div class="results-icon">🎉</div>
         <div class="results-title" data-i18n="resultTitle">
           Impostors Revealed
         </div>
