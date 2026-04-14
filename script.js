@@ -3,6 +3,7 @@ const state = {
   totalPlayers: 4,
   numImpostors: 1,
   gameType: "no-word", // 'no-word' | 'related-word' | 'clueless'
+  category: "__random__",
   lang: localStorage.getItem("impostor-lang") || "en",
   wordPair: null, // { civilian, impostor }
   players: [], // [{ id, isImpostor, word }]
@@ -11,6 +12,10 @@ const state = {
   cardRevealed: false,
   phase: "setup", // 'setup' | 'reveal' | 'game' | 'results'
 };
+
+/*  localStorage helpers  */
+const LOCALSTORAGE_NAMES_KEY = "impostor-player-names";
+const LOCALSTORAGE_SETTINGS_KEY = "impostor-game-settings";
 
 /*  i18n helpers  */
 function t(key) {
@@ -41,12 +46,9 @@ function switchLanguage(lang) {
   renderCategorySelect();
 }
 
-/*  localStorage helpers  */
-const LS_KEY = "impostor-player-names";
-
 function loadStoredNames() {
   try {
-    return JSON.parse(localStorage.getItem(LS_KEY)) || [];
+    return JSON.parse(localStorage.getItem(LOCALSTORAGE_NAMES_KEY)) || [];
   } catch {
     return [];
   }
@@ -56,7 +58,30 @@ function persistNames() {
   const values = Array.from(document.querySelectorAll(".name-input")).map(
     (el) => el.value.trim(),
   );
-  localStorage.setItem(LS_KEY, JSON.stringify(values));
+  localStorage.setItem(LOCALSTORAGE_NAMES_KEY, JSON.stringify(values));
+}
+
+function loadStoredGameSettings() {
+  try {
+    const settings =
+      JSON.parse(localStorage.getItem(LOCALSTORAGE_SETTINGS_KEY)) || {};
+    if (settings.totalPlayers) state.totalPlayers = settings.totalPlayers;
+    if (settings.numImpostors) state.numImpostors = settings.numImpostors;
+    if (settings.gameType) state.gameType = settings.gameType;
+    if (settings.category) state.category = settings.category;
+  } catch {
+    // Use defaults if parsing fails
+  }
+}
+
+function persistGameSettings() {
+  const settings = {
+    totalPlayers: state.totalPlayers,
+    numImpostors: state.numImpostors,
+    gameType: state.gameType,
+    category: state.category,
+  };
+  localStorage.setItem(LOCALSTORAGE_SETTINGS_KEY, JSON.stringify(settings));
 }
 
 /*  Helpers  */
@@ -95,6 +120,7 @@ function initLangSwitcher() {
 
 /*  Setup Screen  */
 function initSetup() {
+  loadStoredGameSettings();
   updateCounterUI("players", state.totalPlayers);
   updateCounterUI("impostors", state.numImpostors);
   setGameType(state.gameType);
@@ -104,7 +130,6 @@ function initSetup() {
 
 function renderCategorySelect() {
   const sel = document.getElementById("select-category");
-  const prev = sel.value;
   sel.innerHTML = "";
 
   const pairs = WORD_PAIRS[state.lang] || WORD_PAIRS.en;
@@ -123,10 +148,8 @@ function renderCategorySelect() {
     sel.appendChild(opt);
   });
 
-  // Restore selection if the same category exists in the new language (best-effort)
-  if (prev && [...sel.options].some((o) => o.value === prev)) {
-    sel.value = prev;
-  }
+  // Restore stored category selection
+  sel.value = state.category;
 }
 
 function renderNameInputs() {
@@ -173,6 +196,7 @@ function changeCounter(type, delta) {
     }
     updateCounterUI("players", state.totalPlayers);
     updateCounterUI("impostors", state.numImpostors);
+    persistGameSettings();
     renderNameInputs();
   } else {
     const max = state.totalPlayers - 2;
@@ -183,6 +207,7 @@ function changeCounter(type, delta) {
 
 function setGameType(type) {
   state.gameType = type;
+  persistGameSettings();
   document.querySelectorAll(".type-option").forEach((el) => {
     el.classList.toggle("selected", el.dataset.type === type);
   });
@@ -394,6 +419,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.querySelectorAll(".type-option").forEach((el) => {
     el.addEventListener("click", () => setGameType(el.dataset.type));
+  });
+
+  document.getElementById("select-category").addEventListener("change", (e) => {
+    state.category = e.target.value;
+    persistGameSettings();
   });
 
   document.getElementById("btn-start").addEventListener("click", startGame);

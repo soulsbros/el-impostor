@@ -27,23 +27,19 @@ const WORD_PAIRS = {
     { civilian: "Croissant", impostor: "Brioche", category: "Food & Drink" },
     { civilian: "Steak", impostor: "Pork Chop", category: "Food & Drink" },
 
-    // Places
-    { civilian: "Beach", impostor: "Lake", category: "Places" },
-    { civilian: "Museum", impostor: "Gallery", category: "Places" },
-    { civilian: "Airport", impostor: "Train Station", category: "Places" },
-    { civilian: "Cinema", impostor: "Theatre", category: "Places" },
-    { civilian: "Hospital", impostor: "Clinic", category: "Places" },
-    { civilian: "Supermarket", impostor: "Market", category: "Places" },
-    { civilian: "Castle", impostor: "Palace", category: "Places" },
-    { civilian: "Forest", impostor: "Jungle", category: "Places" },
+    // Misc
+    { civilian: "Doctor", impostor: "Nurse", category: "Misc" },
+    { civilian: "Crown", impostor: "Tiara", category: "Misc" },
+    { civilian: "Candle", impostor: "Torch", category: "Misc" },
+    { civilian: "Mirror", impostor: "Window", category: "Misc" },
 
-    // Sports
-    { civilian: "Football", impostor: "Rugby", category: "Sports" },
-    { civilian: "Tennis", impostor: "Badminton", category: "Sports" },
-    { civilian: "Swimming", impostor: "Water Polo", category: "Sports" },
-    { civilian: "Basketball", impostor: "Handball", category: "Sports" },
-    { civilian: "Boxing", impostor: "Wrestling", category: "Sports" },
-    { civilian: "Skiing", impostor: "Snowboarding", category: "Sports" },
+    // Nature
+    { civilian: "Sun", impostor: "Moon", category: "Nature" },
+    { civilian: "River", impostor: "Stream", category: "Nature" },
+    { civilian: "Volcano", impostor: "Mountain", category: "Nature" },
+    { civilian: "Diamond", impostor: "Crystal", category: "Nature" },
+    { civilian: "Thunder", impostor: "Lightning", category: "Nature" },
+    { civilian: "Ocean", impostor: "Sea", category: "Nature" },
 
     // Objects & Tech
     { civilian: "Guitar", impostor: "Ukulele", category: "Objects & Tech" },
@@ -69,19 +65,23 @@ const WORD_PAIRS = {
     },
     { civilian: "Piano", impostor: "Keyboard", category: "Objects & Tech" },
 
-    // Nature
-    { civilian: "Sun", impostor: "Moon", category: "Nature" },
-    { civilian: "River", impostor: "Stream", category: "Nature" },
-    { civilian: "Volcano", impostor: "Mountain", category: "Nature" },
-    { civilian: "Diamond", impostor: "Crystal", category: "Nature" },
-    { civilian: "Thunder", impostor: "Lightning", category: "Nature" },
-    { civilian: "Ocean", impostor: "Sea", category: "Nature" },
+    // Places
+    { civilian: "Beach", impostor: "Lake", category: "Places" },
+    { civilian: "Museum", impostor: "Gallery", category: "Places" },
+    { civilian: "Airport", impostor: "Train Station", category: "Places" },
+    { civilian: "Cinema", impostor: "Theatre", category: "Places" },
+    { civilian: "Hospital", impostor: "Clinic", category: "Places" },
+    { civilian: "Supermarket", impostor: "Market", category: "Places" },
+    { civilian: "Castle", impostor: "Palace", category: "Places" },
+    { civilian: "Forest", impostor: "Jungle", category: "Places" },
 
-    // Misc
-    { civilian: "Doctor", impostor: "Nurse", category: "Misc" },
-    { civilian: "Crown", impostor: "Tiara", category: "Misc" },
-    { civilian: "Candle", impostor: "Torch", category: "Misc" },
-    { civilian: "Mirror", impostor: "Window", category: "Misc" },
+    // Sports
+    { civilian: "Football", impostor: "Rugby", category: "Sports" },
+    { civilian: "Tennis", impostor: "Badminton", category: "Sports" },
+    { civilian: "Swimming", impostor: "Water Polo", category: "Sports" },
+    { civilian: "Basketball", impostor: "Handball", category: "Sports" },
+    { civilian: "Boxing", impostor: "Wrestling", category: "Sports" },
+    { civilian: "Skiing", impostor: "Snowboarding", category: "Sports" },
   ],
 
   it: [
