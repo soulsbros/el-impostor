@@ -1,4 +1,6 @@
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -15,17 +17,22 @@
   --success: #22c55e;
   --text: #e2e8f0;
   --text-muted: #94a3b8;
-  --border: rgba(255,255,255,0.08);
+  --border: rgba(255, 255, 255, 0.08);
   --radius: 16px;
   --radius-sm: 10px;
 }
 
-html, body {
+html,
+body {
   height: 100%;
 }
 
 body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family:
+    "Segoe UI",
+    system-ui,
+    -apple-system,
+    sans-serif;
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
@@ -34,6 +41,17 @@ body {
   align-items: center;
   justify-content: flex-start;
   padding: 0;
+}
+
+footer {
+  margin-top: 60px;
+  padding: 20px;
+  color: var(--text-muted);
+}
+
+footer a {
+  color: var(--text-muted);
+  text-decoration: none;
 }
 
 /* ── Language switcher ─────────────────────────────── */
@@ -57,7 +75,10 @@ body {
   font-weight: 700;
   letter-spacing: 0.5px;
   padding: 5px 9px;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -88,8 +109,14 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ── Common layout ─────────────────────────────────── */
@@ -183,7 +210,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s, border-color 0.15s;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -260,7 +289,7 @@ body {
 }
 
 .toggle-slider::before {
-  content: '';
+  content: "";
   position: absolute;
   left: 4px;
   top: 50%;
@@ -269,7 +298,9 @@ body {
   height: 18px;
   background: var(--text-muted);
   border-radius: 50%;
-  transition: transform 0.2s, background 0.2s;
+  transition:
+    transform 0.2s,
+    background 0.2s;
 }
 
 .toggle-switch input:checked + .toggle-slider {
@@ -300,7 +331,9 @@ body {
   padding: 14px 12px;
   cursor: pointer;
   text-align: center;
-  transition: border-color 0.15s, background 0.15s;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -399,7 +432,10 @@ body {
   width: 100%;
   max-width: 480px;
   min-height: 54px;
-  transition: transform 0.1s, box-shadow 0.1s, opacity 0.1s;
+  transition:
+    transform 0.1s,
+    box-shadow 0.1s,
+    opacity 0.1s;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -469,7 +505,10 @@ body {
   width: 100%;
   text-align: center;
   cursor: pointer;
-  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    transform 0.15s;
   -webkit-tap-highlight-color: transparent;
   min-height: 260px;
   display: flex;
@@ -588,8 +627,13 @@ body {
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.08); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
 }
 
 .game-title {
